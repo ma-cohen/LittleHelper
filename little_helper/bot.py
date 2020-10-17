@@ -1,6 +1,6 @@
 import random
-import conf
 import discord
+import logging
 from little_helper import (
     error_message,
     lh_commands,
@@ -9,19 +9,22 @@ from little_helper import (
     user_messages
 )
 from discord.ext import commands
+from logger import logger
 
 bot = commands.Bot(command_prefix=lh_commands.command_prefix)
+logging.basicConfig(level=logging.INFO)
 
 
 @bot.event
 async def on_command_error(ctx, error):
+    logger.error(f'on command error{error}')
     if isinstance(error, commands.errors.CheckFailure):
         await ctx.send(error_message.false_role)
     elif isinstance(error.original, exceptions.ChannelNameNotFound):
         await ctx.send(error_message.channel_not_found)
 
 
-@bot.command(name=lh_commands.create_channel)
+@bot.command(name=lh_commands.create_channel, help=user_messages.help_create_channel)
 @commands.has_role(roles.admin)
 async def create_channel(ctx, channel_name: str = None):
     if channel_name is None:
@@ -35,7 +38,7 @@ async def create_channel(ctx, channel_name: str = None):
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user} is ready')
+    logger.info(f'{bot.user} is ready')
 
 
 @bot.command(name='karo-joke',
