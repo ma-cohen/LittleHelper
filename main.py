@@ -1,9 +1,9 @@
-from bot import client
+from little_helper import bot
 import conf
 
 
 def main():
-    client.run(conf.token)
+    bot.run(conf.token)
 
 
 if __name__ == '__main__':
