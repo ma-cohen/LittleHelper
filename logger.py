@@ -1,12 +1,11 @@
 import logging
 
-logger = logging.getLogger('little_helper')
-
 
 def initialize_logger():
+    logger = logging.getLogger('discord')
     # create console handler and set level to debug
     ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
+    ch.setLevel(logging.DEBUG)
 
     # create formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

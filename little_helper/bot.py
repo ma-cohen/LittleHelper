@@ -7,15 +7,19 @@ from little_helper import (
     exceptions,
     user_messages
 )
+from fire_base_handler import fire_base_handler
 from discord.ext import commands
-from logger import logger
+import logging
+logging.basicConfig(level=logging.INFO)
+
+#TODO - fix logging 
 
 bot = commands.Bot(command_prefix=lh_commands.command_prefix)
 
 
 @bot.event
 async def on_command_error(ctx, error):
-    logger.error(f'on command error {error}')
+    logging.error(f'on command error {error}')
     if isinstance(error, commands.errors.CheckFailure):
         await ctx.send(error_message.false_role)
     elif isinstance(error.original, exceptions.ChannelNameNotFound):
@@ -36,7 +40,8 @@ async def create_channel(ctx, channel_name: str = None):
 
 @bot.event
 async def on_ready():
-    logger.info(f'{bot.user} is ready')
+    print('ready')
+    logging.info(f'{bot.user} is ready')
 
 
 @bot.command(name='karo-joke',
@@ -55,6 +60,17 @@ async def karo_jokes(ctx, n: int = 1):
         response += f'{random.choice(karo_jokes_list)}\n'
 
     await ctx.send(response)
+
+
+@bot.command(name='joke',
+             help='test')
+async def karo_jokes(ctx):
+    docs = fire_base_handler.get_all_docs('jokes')
+    res = ''
+    for doc in docs:
+        res += doc.to_dict().get('joke')
+
+    await ctx.send(res)
 
 
 @bot.command(name='joke-by-author',
