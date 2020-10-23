@@ -1,2 +1,3 @@
-command_prefix = '!'
-create_channel = 'create-channel'
+COMMAND_PREFIX = '!'
+CREATE_CHANNEL = 'create-channel'
+ADD_JOKE = 'add-joke'

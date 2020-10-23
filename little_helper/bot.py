@@ -9,24 +9,26 @@ from little_helper import (
 )
 from fire_base_handler import fire_base_handler
 from discord.ext import commands
+from jokes import Joke, jokes
 import logging
+
 logging.basicConfig(level=logging.INFO)
 
-#TODO - fix logging 
+# TODO - fix logging
 
-bot = commands.Bot(command_prefix=lh_commands.command_prefix)
+bot = commands.Bot(command_prefix=lh_commands.COMMAND_PREFIX)
 
 
 @bot.event
 async def on_command_error(ctx, error):
     logging.error(f'on command error {error}')
     if isinstance(error, commands.errors.CheckFailure):
-        await ctx.send(error_message.false_role)
+        await ctx.send(error_message.FALSE_ROLE)
     elif isinstance(error.original, exceptions.ChannelNameNotFound):
-        await ctx.send(error_message.channel_not_found)
+        await ctx.send(error_message.CHANNEL_NOT_FOUND)
 
 
-@bot.command(name=lh_commands.create_channel, help=user_messages.help_create_channel)
+@bot.command(name=lh_commands.CREATE_CHANNEL, help=user_messages.HELP_CREATE_CHANNEL)
 @commands.has_role(roles.admin)
 async def create_channel(ctx, channel_name: str = None):
     if channel_name is None:
@@ -35,7 +37,33 @@ async def create_channel(ctx, channel_name: str = None):
     existing_channel = discord.utils.get(guild.text_channels, name=channel_name)
     if not existing_channel:
         await guild.create_text_channel(channel_name)
-        await ctx.send(user_messages.channel_was_created.format(channel_name))
+        await ctx.send(user_messages.CHANNEL_WAS_CREATED.format(channel_name))
+
+
+#TODO add some tests to see if all edge cases are covered
+
+@bot.group()
+async def joke(ctx):
+    if ctx.invoked_subcommand is None:
+        await ctx.send(error_message.INVALID_JOKE_COMMAND)
+
+
+@joke.command(help=user_messages.HELP_JOKE_ADD)
+async def add(ctx, joke_to_add: str, category: str = 'General'):
+    author = ctx.message.author.name
+    new_joke = Joke(author, joke_to_add, category)
+    jokes.append(new_joke)
+    await ctx.send(user_messages.JOKE_WAS_ADDED.format(new_joke))
+
+
+@joke.command(help=user_messages.HELP_JOKES_CHANGES)
+async def changes(ctx):
+    await ctx.send(user_messages.JOKES_CHANGES.format(jokes))
+
+
+@joke.command()
+async def save(ctx):
+    logging.info("save")
 
 
 @bot.event
@@ -62,15 +90,15 @@ async def karo_jokes(ctx, n: int = 1):
     await ctx.send(response)
 
 
-@bot.command(name='joke',
-             help='test')
-async def karo_jokes(ctx):
-    docs = fire_base_handler.get_all_docs('jokes')
-    res = ''
-    for doc in docs:
-        res += doc.to_dict().get('joke')
-
-    await ctx.send(res)
+# @bot.command(name='joke',
+#              help='test')
+# async def karo_jokes(ctx):
+#     docs = fire_base_handler.get_all_docs('jokes')
+#     res = ''
+#     for doc in docs:
+#         res += doc.to_dict().get('joke')
+#
+#     await ctx.send(res)
 
 
 @bot.command(name='joke-by-author',
