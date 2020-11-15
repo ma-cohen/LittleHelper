@@ -17,5 +17,12 @@ class _FireBaseHandler:
             docs.append(doc)
         return docs
 
+    def add_doc(self, collection, doc):
+        self._data_base.collection(collection).add(doc)
+
+    def add_docs(self, collection, docs):
+        for doc in docs:
+            self.add_doc(collection, doc)
+
 
 fire_base_handler = _FireBaseHandler()

@@ -8,6 +8,10 @@ class _Jokes:
     def __len__(self):
         return len(self._jokes)
 
+    @property
+    def new_jokes(self):
+        return [joke.to_dict() for joke in self._jokes]
+
     def __str__(self):
         jokes_str = ''
         number_of_jokes = len(self)
